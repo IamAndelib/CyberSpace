@@ -1,0 +1,19 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.cyberspace.app-mergeDebugResources-24:/values-h720dp-v13/values-h720dp-v13.xml",
+            "map": [
+                {
+                    "source": "/home/mimisriz/.gradle/caches/9.3.1/transforms/535bb61ae74dc7cb58c7175c55b097ea/transformed/appcompat-1.7.0/res/values-h720dp-v13/values-h720dp-v13.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "66",
+                        "endOffsets": "117"
+                    }
+                }
+            ]
+        }
+    ]
+}

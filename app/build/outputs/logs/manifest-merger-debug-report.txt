@@ -1,0 +1,258 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:2:1-24:12
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:2:1-24:12
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:2:1-24:12
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:2:1-24:12
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/668daf6c65b786a97986df8a8bf4b9ae/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/535bb61ae74dc7cb58c7175c55b097ea/transformed/appcompat-1.7.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.webkit:webkit:1.12.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/5a70c2f1c54bcbe44c688f57e1319df0/transformed/webkit-1.12.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/ef685043e71b774e86c3fe268d1d41f7/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.fragment:fragment:1.5.4] /home/mimisriz/.gradle/caches/9.3.1/transforms/9b8cb8195cdd6ddb2c2f9f4aa57026ac/transformed/fragment-1.5.4/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/724c915f9e26e9ddf2b587ef8d3d620f/transformed/activity-1.7.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/4ba5b2ec568bc3c3f45b27467e6288a4/transformed/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/a42aaafa69fcc2e3f3b850622adcf6fa/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/89b010726be4708623d8e02221752f04/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/d35ff3e8c672b42dec956b5b8a0d17ec/transformed/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/ce81a98c8e2103c8b0e022deb2c73a6b/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/03760542f8896aac4552b19bd95c77bd/transformed/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/f25b4d17514fb2552094e701d68a7e75/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/781115c98affd200b2ce68f46fcde30b/transformed/savedstate-1.2.1/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/67ae1c7a9eb044d393da8e02d5e3f2f2/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9574bbe0a07c329d061fa7c6d9aa0bb5/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9291a07f3e8e8df9a3689d9f5f0e8146/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/adc51c1e5e960ed02a37a8211c137a6a/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/a8ebbff11352cb635f037ba4e40b7db3/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/b11e00d7c35d334cf2ceae653c1a3e08/transformed/core-ktx-1.15.0/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/d358888fe19065a2e8c57fc005615cc1/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/4dc560c821294a6565736cb787b20771/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/3ce680cc27362d85c4ba33b61bca5978/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.2.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/bdf6eab9021c27df1b19cbf8808e9893/transformed/tracing-1.2.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/28b02b2999e92874365129549e03efe1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/2bfe1996254b0c45a09b218ef9020532/transformed/core-runtime-2.2.0/AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+	android:versionName
+		INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+	android:versionCode
+		INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.INTERNET
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:4:5-67
+	android:name
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:4:22-64
+application
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:6:5-23:19
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:6:5-23:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:28:5-89
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/28b02b2999e92874365129549e03efe1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/28b02b2999e92874365129549e03efe1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+	android:extractNativeLibs
+		INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:28:18-86
+	android:supportsRtl
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:10:9-35
+	android:label
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:9:9-41
+	android:icon
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:8:9-43
+	android:allowBackup
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:7:9-35
+	android:theme
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:11:9-48
+	android:usesCleartextTraffic
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:12:9-45
+activity#com.cyberspace.app.MainActivity
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:14:9-22:20
+	android:exported
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:16:13-36
+	android:configChanges
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:17:13-74
+	android:name
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:15:13-41
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:18:13-21:29
+action#android.intent.action.MAIN
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:19:17-69
+	android:name
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:19:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:20:17-77
+	android:name
+		ADDED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml:20:27-74
+uses-sdk
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/668daf6c65b786a97986df8a8bf4b9ae/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/668daf6c65b786a97986df8a8bf4b9ae/transformed/appcompat-resources-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/535bb61ae74dc7cb58c7175c55b097ea/transformed/appcompat-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/535bb61ae74dc7cb58c7175c55b097ea/transformed/appcompat-1.7.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.webkit:webkit:1.12.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/5a70c2f1c54bcbe44c688f57e1319df0/transformed/webkit-1.12.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.webkit:webkit:1.12.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/5a70c2f1c54bcbe44c688f57e1319df0/transformed/webkit-1.12.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/ef685043e71b774e86c3fe268d1d41f7/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/ef685043e71b774e86c3fe268d1d41f7/transformed/swiperefreshlayout-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.4] /home/mimisriz/.gradle/caches/9.3.1/transforms/9b8cb8195cdd6ddb2c2f9f4aa57026ac/transformed/fragment-1.5.4/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.4] /home/mimisriz/.gradle/caches/9.3.1/transforms/9b8cb8195cdd6ddb2c2f9f4aa57026ac/transformed/fragment-1.5.4/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/724c915f9e26e9ddf2b587ef8d3d620f/transformed/activity-1.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.7.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/724c915f9e26e9ddf2b587ef8d3d620f/transformed/activity-1.7.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/4ba5b2ec568bc3c3f45b27467e6288a4/transformed/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/4ba5b2ec568bc3c3f45b27467e6288a4/transformed/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/a42aaafa69fcc2e3f3b850622adcf6fa/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/a42aaafa69fcc2e3f3b850622adcf6fa/transformed/emoji2-views-helper-1.3.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:21:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/89b010726be4708623d8e02221752f04/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/89b010726be4708623d8e02221752f04/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/d35ff3e8c672b42dec956b5b8a0d17ec/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/d35ff3e8c672b42dec956b5b8a0d17ec/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.viewpager:viewpager:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/ce81a98c8e2103c8b0e022deb2c73a6b/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/ce81a98c8e2103c8b0e022deb2c73a6b/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/03760542f8896aac4552b19bd95c77bd/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/03760542f8896aac4552b19bd95c77bd/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/f25b4d17514fb2552094e701d68a7e75/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/f25b4d17514fb2552094e701d68a7e75/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/781115c98affd200b2ce68f46fcde30b/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/781115c98affd200b2ce68f46fcde30b/transformed/savedstate-1.2.1/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/67ae1c7a9eb044d393da8e02d5e3f2f2/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/67ae1c7a9eb044d393da8e02d5e3f2f2/transformed/lifecycle-livedata-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9574bbe0a07c329d061fa7c6d9aa0bb5/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9574bbe0a07c329d061fa7c6d9aa0bb5/transformed/lifecycle-viewmodel-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9291a07f3e8e8df9a3689d9f5f0e8146/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9291a07f3e8e8df9a3689d9f5f0e8146/transformed/lifecycle-livedata-core-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/adc51c1e5e960ed02a37a8211c137a6a/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/adc51c1e5e960ed02a37a8211c137a6a/transformed/lifecycle-runtime-2.6.2/AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/a8ebbff11352cb635f037ba4e40b7db3/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/a8ebbff11352cb635f037ba4e40b7db3/transformed/lifecycle-viewmodel-savedstate-2.6.2/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/b11e00d7c35d334cf2ceae653c1a3e08/transformed/core-ktx-1.15.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/b11e00d7c35d334cf2ceae653c1a3e08/transformed/core-ktx-1.15.0/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/d358888fe19065a2e8c57fc005615cc1/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/d358888fe19065a2e8c57fc005615cc1/transformed/annotation-experimental-1.4.1/AndroidManifest.xml:5:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/4dc560c821294a6565736cb787b20771/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/4dc560c821294a6565736cb787b20771/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:21:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/3ce680cc27362d85c4ba33b61bca5978/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/3ce680cc27362d85c4ba33b61bca5978/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.2.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/bdf6eab9021c27df1b19cbf8808e9893/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.tracing:tracing:1.2.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/bdf6eab9021c27df1b19cbf8808e9893/transformed/tracing-1.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/28b02b2999e92874365129549e03efe1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/28b02b2999e92874365129549e03efe1/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/2bfe1996254b0c45a09b218ef9020532/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/2bfe1996254b0c45a09b218ef9020532/transformed/core-runtime-2.2.0/AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /home/mimisriz/projects/cyberspace-android/app/src/main/AndroidManifest.xml
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/2e89ea8947d136a93954d942847056d3/transformed/startup-runtime-1.1.1/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/7765c0a0e990895cf6acb342e3f9e228/transformed/emoji2-1.3.0/AndroidManifest.xml:30:17-75
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:23:9-81
+permission#com.cyberspace.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:26:22-94
+uses-permission#com.cyberspace.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.15.0] /home/mimisriz/.gradle/caches/9.3.1/transforms/45fdde942888bc1d2ebf4a3400119dac/transformed/core-1.15.0/AndroidManifest.xml:26:22-94
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] /home/mimisriz/.gradle/caches/9.3.1/transforms/9722ed005ba06d07135c8dba47575dbc/transformed/lifecycle-process-2.6.2/AndroidManifest.xml:30:17-78
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] /home/mimisriz/.gradle/caches/9.3.1/transforms/16559c4ef9da8742c0fbd1f86973bfc3/transformed/profileinstaller-1.3.1/AndroidManifest.xml:50:25-92
