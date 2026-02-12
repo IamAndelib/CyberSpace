@@ -37,8 +37,24 @@ class MainActivity : AppCompatActivity() {
     private var hadError = false
     private var isInitialLoad = true
     private var isActivityDestroyed = false
+    private var displayProgress = 0
+    private var targetProgress = 0
+    private val progressTickRunnable = object : Runnable {
+        override fun run() {
+            if (isActivityDestroyed || loadingLayout.visibility != View.VISIBLE) return
+            if (displayProgress < targetProgress) {
+                displayProgress += maxOf((targetProgress - displayProgress) / 4, 1)
+            } else if (displayProgress < 90) {
+                displayProgress++
+            }
+            if (displayProgress > 90) displayProgress = 90
+            loadingText.text = "LOADING... $displayProgress%"
+            webView.postDelayed(this, 100)
+        }
+    }
     private val hideLoadingRunnable = Runnable {
         if (isActivityDestroyed) return@Runnable
+        webView.removeCallbacks(progressTickRunnable)
         loadingLayout.visibility = View.GONE
         swipeRefresh.isRefreshing = false
     }
@@ -279,6 +295,7 @@ class MainActivity : AppCompatActivity() {
 
                     // Theme reported → page has rendered with CSS applied
                     webView.removeCallbacks(hideLoadingRunnable)
+                    webView.removeCallbacks(progressTickRunnable)
                     loadingLayout.visibility = View.GONE
                     swipeRefresh.isRefreshing = false
                 }
@@ -308,10 +325,14 @@ class MainActivity : AppCompatActivity() {
             override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
                 contentScrollY = 0
                 loadingLayout.visibility = View.VISIBLE
+                displayProgress = 0
+                targetProgress = 0
                 loadingText.text = "LOADING... 0%"
                 hadError = false
 
+                view.removeCallbacks(progressTickRunnable)
                 view.removeCallbacks(hideLoadingRunnable)
+                view.post(progressTickRunnable)
                 view.postDelayed(hideLoadingRunnable, 10000)
             }
 
@@ -375,9 +396,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onProgressChanged(view: WebView, newProgress: Int) {
-                if (loadingLayout.visibility == View.VISIBLE) {
-                    loadingText.text = "LOADING... $newProgress%"
-                }
+                targetProgress = newProgress * 90 / 100
             }
         }
     }
@@ -419,6 +438,7 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         isActivityDestroyed = true
         webView.removeCallbacks(hideLoadingRunnable)
+        webView.removeCallbacks(progressTickRunnable)
         fileUploadCallback?.onReceiveValue(null)
         fileUploadCallback = null
         webView.destroy()
