@@ -2,6 +2,7 @@ package com.cyberspace.app
 
 import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.webkit.JavascriptInterface
@@ -16,6 +17,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,9 +40,6 @@ class MainActivity : AppCompatActivity() {
         private const val URL = "https://cyberspace.online/"
         private const val DOMAIN = "cyberspace.online"
 
-        // Injected after every page load to report the real content scroll
-        // position back to native. Uses capture-phase listener on document
-        // to catch scroll events from CSS containers, not just the window.
         private const val SCROLL_OBSERVER_JS = """
             (function() {
                 if (window.__scrollObserverInstalled) return;
@@ -67,6 +66,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
 
         swipeRefresh = findViewById(R.id.swipeRefresh)
@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupWebView() {
         webView.isNestedScrollingEnabled = false
+        webView.setBackgroundColor(Color.BLACK)
 
         webView.settings.apply {
             javaScriptEnabled = true
@@ -123,7 +124,6 @@ class MainActivity : AppCompatActivity() {
                     hadError = false
                     view.clearHistory()
                 }
-                // Inject scroll observer so we know the real content scroll position
                 view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
             }
 
@@ -171,9 +171,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSwipeRefresh() {
-        // Use BOTH native canScrollVertically AND JS-reported scroll position.
-        // CSS-based scrolling (common in Nuxt.js) makes canScrollVertically
-        // always return false, so the JS bridge is the reliable source.
         swipeRefresh.setOnChildScrollUpCallback { _, _ ->
             webView.canScrollVertically(-1) || contentScrollY > 0
         }
