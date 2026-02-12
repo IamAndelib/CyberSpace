@@ -1,1 +1,4 @@
-# No custom rules needed — default Android rules are sufficient for this app.
+# Keep methods annotated with @JavascriptInterface (used by WebView JS bridges)
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}

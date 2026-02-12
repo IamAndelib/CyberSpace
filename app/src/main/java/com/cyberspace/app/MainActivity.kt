@@ -16,11 +16,14 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,6 +36,12 @@ class MainActivity : AppCompatActivity() {
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
     private var hadError = false
     private var isInitialLoad = true
+    private var isActivityDestroyed = false
+    private val hideLoadingRunnable = Runnable {
+        if (isActivityDestroyed) return@Runnable
+        loadingLayout.visibility = View.GONE
+        swipeRefresh.isRefreshing = false
+    }
 
     @Volatile
     private var contentScrollY = 0
@@ -79,13 +88,13 @@ class MainActivity : AppCompatActivity() {
                     var style = getComputedStyle(document.body);
                     var bg = style.backgroundColor;
                     var fg = style.color;
-                    
+
                     if (!bg || bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
                         var docStyle = getComputedStyle(document.documentElement);
                         bg = docStyle.backgroundColor;
                         if (!fg) fg = docStyle.color;
                     }
-                    
+
                     if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
                         AndroidTheme.reportTheme(bg, fg || '#ffffff');
                     }
@@ -94,6 +103,64 @@ class MainActivity : AppCompatActivity() {
                 obs.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
                 obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
                 reportBg();
+            })();
+        """
+
+        private const val CUSTOM_UI_MODIFIER_JS = """
+            (function() {
+                if (window.__customUiObserverInstalled) return;
+                window.__customUiObserverInstalled = true;
+
+                function processButtons() {
+                    var buttons = document.querySelectorAll('button, a, div[role="button"]');
+                    buttons.forEach(function(el) {
+                        var text = el.innerText ? el.innerText.trim() : "";
+                        var label = (el.getAttribute('aria-label') || "").toLowerCase();
+                        var lowerText = text.toLowerCase();
+
+                        // --- OPEN BUTTON ---
+                        if (text.includes('[↵] Open') || label.includes('open link')) {
+                            if (!el.innerHTML.includes('↗')) {
+                                el.innerHTML = '<span style="font-size: 1.5em; line-height: 1;">↗</span>';
+                                el.classList.add('icon-btn-custom');
+                                setCommonBtnStyles(el);
+                            }
+                        }
+
+                        // --- SAVE BUTTON (Outline) ---
+                        else if ((text.includes('[S] Save') || label === 'save post') && !lowerText.includes('unsave') && !label.includes('unsave')) {
+                            if (!el.innerHTML.includes('svg') || el.innerHTML.includes('fill="currentColor"')) {
+                                el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>';
+                                el.classList.add('icon-btn-custom');
+                                setCommonBtnStyles(el);
+                            }
+                        }
+
+                        // --- UNSAVE BUTTON (Filled) ---
+                        else if (lowerText.includes('unsave') || label.includes('unsave') || lowerText === 'remove' || text.includes('[R] Remove') || label === 'remove post') {
+                            if (!el.innerHTML.includes('svg') || el.innerHTML.includes('fill="none"')) {
+                                el.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>';
+                                el.classList.add('icon-btn-custom');
+                                setCommonBtnStyles(el);
+                            }
+                        }
+                    });
+                }
+
+                function setCommonBtnStyles(el) {
+                    el.style.padding = '4px 8px';
+                    el.style.display = 'flex';
+                    el.style.alignItems = 'center';
+                    el.style.justifyContent = 'center';
+                }
+
+                var debounceTimer = null;
+                var obs = new MutationObserver(function() {
+                    if (debounceTimer) clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(processButtons, 150);
+                });
+                obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+                processButtons();
             })();
         """
     }
@@ -105,7 +172,6 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefresh = findViewById(R.id.swipeRefresh)
         webView = findViewById(R.id.webView)
-
         loadingLayout = findViewById(R.id.loadingLayout)
         loadingSpinner = findViewById(R.id.loadingSpinner)
         loadingText = findViewById(R.id.loadingText)
@@ -115,10 +181,21 @@ class MainActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val savedBgColor = prefs.getInt("theme_color_bg", Color.BLACK)
         val savedFgColor = prefs.getInt("theme_color_fg", Color.WHITE)
-        
+
         rootLayout.setBackgroundColor(savedBgColor)
         loadingSpinner.indeterminateTintList = ColorStateList.valueOf(savedFgColor)
         loadingText.setTextColor(savedFgColor)
+        swipeRefresh.setColorSchemeColors(savedFgColor)
+        webView.setBackgroundColor(savedBgColor)
+        loadingLayout.setBackgroundColor(savedBgColor)
+
+        // Apply saved theme to system bars
+        window.statusBarColor = savedBgColor
+        window.navigationBarColor = savedBgColor
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+        val light = isLightColor(savedBgColor)
+        insetsController.isAppearanceLightStatusBars = light
+        insetsController.isAppearanceLightNavigationBars = light
 
         setupWebView()
         setupSwipeRefresh()
@@ -127,7 +204,13 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState)
         } else {
-            webView.loadUrl(URL)
+            val deepLinkUri = intent?.data
+            val deepLinkHost = deepLinkUri?.host
+            if (deepLinkUri != null && (deepLinkHost == DOMAIN || deepLinkHost?.endsWith(".$DOMAIN") == true)) {
+                webView.loadUrl(deepLinkUri.toString())
+            } else {
+                webView.loadUrl(URL)
+            }
         }
     }
 
@@ -135,16 +218,23 @@ class MainActivity : AppCompatActivity() {
         val regex = Regex("""rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)""")
         val match = regex.find(css) ?: return null
         return Color.rgb(
-            match.groupValues[1].toInt(),
-            match.groupValues[2].toInt(),
-            match.groupValues[3].toInt()
+            match.groupValues[1].toInt().coerceIn(0, 255),
+            match.groupValues[2].toInt().coerceIn(0, 255),
+            match.groupValues[3].toInt().coerceIn(0, 255)
         )
     }
 
+    private fun isLightColor(color: Int): Boolean {
+        return ColorUtils.calculateLuminance(color) > 0.5
+    }
+
+    private fun isTrustedHost(url: String?): Boolean {
+        val host = if (url != null) Uri.parse(url).host else null
+        return host == DOMAIN || host?.endsWith(".$DOMAIN") == true
+    }
 
     private fun setupWebView() {
         webView.isNestedScrollingEnabled = false
-        webView.setBackgroundColor(Color.TRANSPARENT)
 
         webView.settings.apply {
             javaScriptEnabled = true
@@ -166,16 +256,33 @@ class MainActivity : AppCompatActivity() {
         webView.addJavascriptInterface(object {
             @JavascriptInterface
             fun reportTheme(bgCss: String, fgCss: String) {
+                if (!isTrustedHost(webView.url)) return
+
                 val bgColor = parseCssColor(bgCss) ?: return
                 val fgColor = parseCssColor(fgCss) ?: Color.WHITE
-                
+
                 runOnUiThread {
+                    if (isActivityDestroyed) return@runOnUiThread
                     rootLayout.setBackgroundColor(bgColor)
+                    webView.setBackgroundColor(bgColor)
+                    loadingLayout.setBackgroundColor(bgColor)
                     loadingSpinner.indeterminateTintList = ColorStateList.valueOf(fgColor)
                     loadingText.setTextColor(fgColor)
+                    swipeRefresh.setColorSchemeColors(fgColor)
+
+                    window.statusBarColor = bgColor
+                    window.navigationBarColor = bgColor
+                    val controller = WindowInsetsControllerCompat(window, window.decorView)
+                    val lightBg = isLightColor(bgColor)
+                    controller.isAppearanceLightStatusBars = lightBg
+                    controller.isAppearanceLightNavigationBars = lightBg
+
+                    // Theme reported → page has rendered with CSS applied
+                    webView.removeCallbacks(hideLoadingRunnable)
+                    loadingLayout.visibility = View.GONE
+                    swipeRefresh.isRefreshing = false
                 }
-                
-                // Save theme colors
+
                 getSharedPreferences("app_prefs", MODE_PRIVATE)
                     .edit()
                     .putInt("theme_color_bg", bgColor)
@@ -193,38 +300,46 @@ class MainActivity : AppCompatActivity() {
                 try {
                     startActivity(Intent(Intent.ACTION_VIEW, request.url))
                 } catch (_: ActivityNotFoundException) {
-                    // No app can handle this URL
+                    Toast.makeText(this@MainActivity, "No app can handle this link", Toast.LENGTH_SHORT).show()
                 }
                 return true
             }
 
             override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
+                contentScrollY = 0
                 loadingLayout.visibility = View.VISIBLE
                 loadingText.text = "LOADING... 0%"
-                view.alpha = 0f // Hide WebView content during load to show rootLayout background
+                hadError = false
+
+                view.removeCallbacks(hideLoadingRunnable)
+                view.postDelayed(hideLoadingRunnable, 10000)
             }
 
             override fun onPageFinished(view: WebView, url: String?) {
-                view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
-                view.evaluateJavascript(THEME_OBSERVER_JS, null)
+                if (isTrustedHost(url)) {
+                    view.evaluateJavascript(THEME_OBSERVER_JS, null)
+                    view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
+                    view.evaluateJavascript(CUSTOM_UI_MODIFIER_JS, null)
+                }
                 isInitialLoad = false
-                
-                // Keep loading screen up for a moment to allow rendering
-                view.postDelayed({
-                    loadingLayout.visibility = View.GONE
-                    view.alpha = 1f // Reveal WebView
-                    swipeRefresh.isRefreshing = false
-                }, 800)
+
+                // Replace 10s safety with a 3s fallback;
+                // the theme observer will hide sooner when it reports.
+                view.removeCallbacks(hideLoadingRunnable)
+                view.postDelayed(hideLoadingRunnable, 3000)
             }
 
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
                 if (request.isForMainFrame) {
                     loadingLayout.visibility = View.GONE
                     hadError = true
+                    val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                    val errBg = String.format("#%06X", 0xFFFFFF and prefs.getInt("theme_color_bg", Color.BLACK))
+                    val errFg = String.format("#%06X", 0xFFFFFF and prefs.getInt("theme_color_fg", Color.WHITE))
                     view.loadDataWithBaseURL(
                         null,
                         """
-                        <html><body style="display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:sans-serif;background:#111;color:#fff;text-align:center">
+                        <html><body style="display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:sans-serif;background:$errBg;color:$errFg;text-align:center">
                         <div>
                             <h2>No Connection</h2>
                             <p>Could not reach Cyberspace. Check your internet connection.</p>
@@ -258,15 +373,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 return true
             }
-            
+
             override fun onProgressChanged(view: WebView, newProgress: Int) {
-                loadingText.text = "LOADING... $newProgress%"
-                if (newProgress == 100) {
-                    // Do not hide here - let onPageFinished handle it with delay
-                } else {
-                    if (loadingLayout.visibility != View.VISIBLE) {
-                        loadingLayout.visibility = View.VISIBLE
-                    }
+                if (loadingLayout.visibility == View.VISIBLE) {
+                    loadingText.text = "LOADING... $newProgress%"
                 }
             }
         }
@@ -274,7 +384,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupSwipeRefresh() {
         swipeRefresh.setOnChildScrollUpCallback { _, _ ->
-            webView.canScrollVertically(-1) || contentScrollY > 0
+            webView.canScrollVertically(-1) || contentScrollY > 0 || webView.scrollY > 0
         }
         swipeRefresh.setOnRefreshListener {
             webView.reload()
@@ -292,6 +402,27 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        webView.onResume()
+        webView.resumeTimers()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        webView.onPause()
+        webView.pauseTimers()
+    }
+
+    override fun onDestroy() {
+        isActivityDestroyed = true
+        webView.removeCallbacks(hideLoadingRunnable)
+        fileUploadCallback?.onReceiveValue(null)
+        fileUploadCallback = null
+        webView.destroy()
+        super.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
