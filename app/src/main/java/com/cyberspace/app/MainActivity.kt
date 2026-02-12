@@ -27,6 +27,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var webViewContainer: android.widget.FrameLayout
     private lateinit var webView: WebView
     private lateinit var swipeRefresh: WebViewSwipeRefreshLayout
     private lateinit var loadingLayout: View
@@ -34,11 +35,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loadingText: android.widget.TextView
     private lateinit var rootLayout: View
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
-    private var hadError = false
-    private var isInitialLoad = true
     private var isActivityDestroyed = false
     private var displayProgress = 0
     private var targetProgress = 0
+    
+    // Track the background WebView used for seamless refresh
+    private var backgroundWebView: WebView? = null
+
     private val progressTickRunnable = object : Runnable {
         override fun run() {
             if (isActivityDestroyed || loadingLayout.visibility != View.VISIBLE) return
@@ -82,43 +85,17 @@ class MainActivity : AppCompatActivity() {
                     y = Math.round(y);
                     if (y !== last) { last = y; AndroidScroll.report(y); }
                 }
-                function windowScroll() {
-                    report(window.scrollY || window.pageYOffset || 0);
-                }
-                window.addEventListener('scroll', windowScroll, { passive: true });
+                function ws() { return window.scrollY || window.pageYOffset || 0; }
+                window.addEventListener('scroll', function() { report(ws()); }, { passive: true });
                 document.addEventListener('scroll', function(e) {
                     var t = e.target;
-                    if (t && t !== document && t.scrollTop !== undefined) {
+                    if (t && t !== document && t.scrollTop !== undefined && t.scrollTop > 0) {
                         report(t.scrollTop);
+                    } else {
+                        report(ws());
                     }
                 }, { capture: true, passive: true });
-                windowScroll();
-            })();
-        """
-
-        private const val THEME_OBSERVER_JS = """
-            (function() {
-                if (window.__themeObserverInstalled) return;
-                window.__themeObserverInstalled = true;
-                function reportBg() {
-                    var style = getComputedStyle(document.body);
-                    var bg = style.backgroundColor;
-                    var fg = style.color;
-
-                    if (!bg || bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent') {
-                        var docStyle = getComputedStyle(document.documentElement);
-                        bg = docStyle.backgroundColor;
-                        if (!fg) fg = docStyle.color;
-                    }
-
-                    if (bg && bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
-                        AndroidTheme.reportTheme(bg, fg || '#ffffff');
-                    }
-                }
-                var obs = new MutationObserver(reportBg);
-                obs.observe(document.body, { attributes: true, attributeFilter: ['class', 'style'] });
-                obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'style', 'data-theme'] });
-                reportBg();
+                report(ws());
             })();
         """
 
@@ -186,6 +163,7 @@ class MainActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_main)
 
+        webViewContainer = findViewById(R.id.webViewContainer)
         swipeRefresh = findViewById(R.id.swipeRefresh)
         webView = findViewById(R.id.webView)
         loadingLayout = findViewById(R.id.loadingLayout)
@@ -198,22 +176,9 @@ class MainActivity : AppCompatActivity() {
         val savedBgColor = prefs.getInt("theme_color_bg", Color.BLACK)
         val savedFgColor = prefs.getInt("theme_color_fg", Color.WHITE)
 
-        rootLayout.setBackgroundColor(savedBgColor)
-        loadingSpinner.indeterminateTintList = ColorStateList.valueOf(savedFgColor)
-        loadingText.setTextColor(savedFgColor)
-        swipeRefresh.setColorSchemeColors(savedFgColor)
-        webView.setBackgroundColor(savedBgColor)
-        loadingLayout.setBackgroundColor(savedBgColor)
+        applyTheme(savedBgColor, savedFgColor)
 
-        // Apply saved theme to system bars
-        window.statusBarColor = savedBgColor
-        window.navigationBarColor = savedBgColor
-        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-        val light = isLightColor(savedBgColor)
-        insetsController.isAppearanceLightStatusBars = light
-        insetsController.isAppearanceLightNavigationBars = light
-
-        setupWebView()
+        setupWebView(webView)
         setupSwipeRefresh()
         setupBackNavigation()
 
@@ -230,18 +195,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun parseCssColor(css: String): Int? {
-        val regex = Regex("""rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)""")
-        val match = regex.find(css) ?: return null
-        return Color.rgb(
-            match.groupValues[1].toInt().coerceIn(0, 255),
-            match.groupValues[2].toInt().coerceIn(0, 255),
-            match.groupValues[3].toInt().coerceIn(0, 255)
-        )
-    }
+    private fun applyTheme(bgColor: Int, fgColor: Int) {
+        rootLayout.setBackgroundColor(bgColor)
+        loadingSpinner.indeterminateTintList = ColorStateList.valueOf(fgColor)
+        loadingText.setTextColor(fgColor)
+        swipeRefresh.setColorSchemeColors(fgColor)
+        // Note: We don't change webView background here constantly to avoid flashes,
+        // it's handled on creation.
+        loadingLayout.setBackgroundColor(bgColor)
 
-    private fun isLightColor(color: Int): Boolean {
-        return ColorUtils.calculateLuminance(color) > 0.5
+        window.statusBarColor = bgColor
+        window.navigationBarColor = bgColor
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+        val light = ColorUtils.calculateLuminance(bgColor) > 0.5
+        insetsController.isAppearanceLightStatusBars = light
+        insetsController.isAppearanceLightNavigationBars = light
     }
 
     private fun isTrustedHost(url: String?): Boolean {
@@ -249,10 +217,10 @@ class MainActivity : AppCompatActivity() {
         return host == DOMAIN || host?.endsWith(".$DOMAIN") == true
     }
 
-    private fun setupWebView() {
-        webView.isNestedScrollingEnabled = false
+    private fun setupWebView(targetWebView: WebView) {
+        targetWebView.isNestedScrollingEnabled = false
 
-        webView.settings.apply {
+        targetWebView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
@@ -261,54 +229,24 @@ class MainActivity : AppCompatActivity() {
             setSupportMultipleWindows(false)
             allowFileAccess = false
         }
-
-        webView.addJavascriptInterface(object {
+        
+        // Add minimal scroll interface
+        targetWebView.addJavascriptInterface(object : Any() {
             @JavascriptInterface
             fun report(scrollY: Int) {
-                contentScrollY = scrollY
+                // Determine if we are at the top (0 or very close to it)
+                if (targetWebView == webView) {
+                    contentScrollY = scrollY
+                }
             }
         }, "AndroidScroll")
-
-        webView.addJavascriptInterface(object {
-            @JavascriptInterface
-            fun reportTheme(bgCss: String, fgCss: String) {
-                if (!isTrustedHost(webView.url)) return
-
-                val bgColor = parseCssColor(bgCss) ?: return
-                val fgColor = parseCssColor(fgCss) ?: Color.WHITE
-
-                runOnUiThread {
-                    if (isActivityDestroyed) return@runOnUiThread
-                    rootLayout.setBackgroundColor(bgColor)
-                    webView.setBackgroundColor(bgColor)
-                    loadingLayout.setBackgroundColor(bgColor)
-                    loadingSpinner.indeterminateTintList = ColorStateList.valueOf(fgColor)
-                    loadingText.setTextColor(fgColor)
-                    swipeRefresh.setColorSchemeColors(fgColor)
-
-                    window.statusBarColor = bgColor
-                    window.navigationBarColor = bgColor
-                    val controller = WindowInsetsControllerCompat(window, window.decorView)
-                    val lightBg = isLightColor(bgColor)
-                    controller.isAppearanceLightStatusBars = lightBg
-                    controller.isAppearanceLightNavigationBars = lightBg
-
-                    // Theme reported → page has rendered with CSS applied
-                    webView.removeCallbacks(hideLoadingRunnable)
-                    webView.removeCallbacks(progressTickRunnable)
-                    loadingLayout.visibility = View.GONE
-                    swipeRefresh.isRefreshing = false
-                }
-
-                getSharedPreferences("app_prefs", MODE_PRIVATE)
-                    .edit()
-                    .putInt("theme_color_bg", bgColor)
-                    .putInt("theme_color_fg", fgColor)
-                    .apply()
-            }
-        }, "AndroidTheme")
-
-        webView.webViewClient = object : WebViewClient() {
+        
+        // Pass the theme update responsibility to a passive interface if needed,
+        // or just let the page load naturally. We removed the ACTIVE theme reporter.
+        // If we want to detect theme changes *after* load, we can add a passive observer,
+        // but for now let's keep it simple as requested.
+        
+        targetWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val host = request.url.host ?: return false
                 if (host == DOMAIN || host.endsWith(".$DOMAIN")) {
@@ -323,66 +261,80 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onPageStarted(view: WebView, url: String?, favicon: android.graphics.Bitmap?) {
-                contentScrollY = 0
-                loadingLayout.visibility = View.VISIBLE
-                displayProgress = 0
-                targetProgress = 0
-                loadingText.text = "LOADING... 0%"
-                hadError = false
+                // Show loader ONLY if we are navigating on the ACTIVE view.
+                // Background refresh views do not trigger the main loader.
+                if (view == webView) {
+                    contentScrollY = 0
+                    loadingLayout.visibility = View.VISIBLE
+                    displayProgress = 0
+                    targetProgress = 0
+                    loadingText.text = "LOADING... 0%"
+                    view.removeCallbacks(progressTickRunnable)
+                    view.post(progressTickRunnable)
+                }
 
-                view.removeCallbacks(progressTickRunnable)
-                view.removeCallbacks(hideLoadingRunnable)
-                view.post(progressTickRunnable)
-                view.postDelayed(hideLoadingRunnable, 10000)
+                // Safety timeout for loading screen
+                view.postDelayed({
+                   if (!isActivityDestroyed && view == webView) {
+                       hideLoadingRunnable.run()
+                   }
+                }, 10000)
             }
 
             override fun onPageFinished(view: WebView, url: String?) {
                 if (isTrustedHost(url)) {
-                    view.evaluateJavascript(THEME_OBSERVER_JS, null)
-                    view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
                     view.evaluateJavascript(CUSTOM_UI_MODIFIER_JS, null)
+                    view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
                 }
-                isInitialLoad = false
 
-                // Replace 10s safety with a 3s fallback;
-                // the theme observer will hide sooner when it reports.
-                view.removeCallbacks(hideLoadingRunnable)
-                view.postDelayed(hideLoadingRunnable, 3000)
+                // If this is the background WebView, wait for visual state to be ready, then swap
+                if (view == backgroundWebView) {
+                    view.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
+                        override fun onComplete(requestId: Long) {
+                             runOnUiThread {
+                                 swapWebView(view)
+                             }
+                        }
+                    })
+                } else if (view == webView) {
+                    // Normal load on active view
+                    view.removeCallbacks(hideLoadingRunnable)
+                    hideLoadingRunnable.run()
+                }
             }
 
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
                 if (request.isForMainFrame) {
+                    if (view == backgroundWebView) {
+                        // Background refresh failed
+                        runOnUiThread {
+                            cancelBackgroundRefresh()
+                            Toast.makeText(this@MainActivity, "Refresh failed", Toast.LENGTH_SHORT).show()
+                        }
+                        return
+                    }
+
                     loadingLayout.visibility = View.GONE
-                    hadError = true
+                    // Show error page on active view
                     val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
                     val errBg = String.format("#%06X", 0xFFFFFF and prefs.getInt("theme_color_bg", Color.BLACK))
                     val errFg = String.format("#%06X", 0xFFFFFF and prefs.getInt("theme_color_fg", Color.WHITE))
-                    view.loadDataWithBaseURL(
-                        null,
-                        """
-                        <html><body style="display:flex;justify-content:center;align-items:center;height:100vh;margin:0;font-family:sans-serif;background:$errBg;color:$errFg;text-align:center">
-                        <div>
-                            <h2>No Connection</h2>
-                            <p>Could not reach Cyberspace. Check your internet connection.</p>
-                            <button onclick="location.href='$URL'" style="padding:12px 24px;font-size:16px;border:none;border-radius:8px;background:#6366f1;color:#fff;cursor:pointer">Retry</button>
-                        </div>
-                        </body></html>
-                        """.trimIndent(),
-                        "text/html",
-                        "UTF-8",
-                        null
-                    )
+                    view.loadDataWithBaseURL(null,
+                        "<html><body style='background:$errBg;color:$errFg;display:flex;justify-content:center;align-items:center;height:100vh'><h2>Connection Error</h2></body></html>",
+                        "text/html", "UTF-8", null)
                     swipeRefresh.isRefreshing = false
                 }
             }
         }
 
-        webView.webChromeClient = object : WebChromeClient() {
+        targetWebView.webChromeClient = object : WebChromeClient() {
             override fun onShowFileChooser(
                 webView: WebView,
                 callback: ValueCallback<Array<Uri>>,
                 params: FileChooserParams
             ): Boolean {
+                if (webView != this@MainActivity.webView) return false 
+
                 fileUploadCallback?.onReceiveValue(null)
                 fileUploadCallback = callback
                 try {
@@ -396,17 +348,90 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onProgressChanged(view: WebView, newProgress: Int) {
-                targetProgress = newProgress * 90 / 100
+                if (view == webView) {
+                    targetProgress = newProgress * 90 / 100
+                }
             }
         }
+    }
+    
+    private fun swapWebView(newWebView: WebView) {
+        if (isActivityDestroyed || backgroundWebView != newWebView) return
+        
+        val oldWebView = webView
+        webView = newWebView
+        backgroundWebView = null
+        
+        // Prepare new view to take over
+        webView.visibility = View.VISIBLE
+        webView.isFocusable = true
+        webView.isFocusableInTouchMode = true
+        webView.requestFocus()
+        
+        // Remove old view
+        webViewContainer.removeView(oldWebView)
+        oldWebView.destroy()
+        
+        swipeRefresh.isRefreshing = false
+        
+        // Reset scroll tracking
+        contentScrollY = 0
+    }
+    
+    private fun cancelBackgroundRefresh() {
+        val bgView = backgroundWebView ?: return
+        backgroundWebView = null
+        webViewContainer.removeView(bgView)
+        bgView.destroy()
+        swipeRefresh.isRefreshing = false
     }
 
     private fun setupSwipeRefresh() {
         swipeRefresh.setOnChildScrollUpCallback { _, _ ->
-            webView.canScrollVertically(-1) || contentScrollY > 0 || webView.scrollY > 0
+            // Use both native scroll check AND JS scroll reporting
+            // contentScrollY > 10 allows a tiny bit of slop, but > 0 is stricter.
+            // Let's use > 0 for strict "at top" requirement.
+            webView.canScrollVertically(-1) || webView.scrollY > 0 || contentScrollY > 0
         }
         swipeRefresh.setOnRefreshListener {
-            webView.reload()
+            // Cancel any existing background refresh
+            cancelBackgroundRefresh()
+            
+            // Create new background WebView
+            val newWebView = WebView(this)
+            backgroundWebView = newWebView
+            
+            newWebView.layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+                android.view.ViewGroup.LayoutParams.MATCH_PARENT
+            )
+
+            // Visible but behind current view (Index 0)
+            newWebView.visibility = View.VISIBLE
+            // Not focusable while loading
+            newWebView.isFocusable = false
+            newWebView.isFocusableInTouchMode = false
+            
+            val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+            val savedBgColor = prefs.getInt("theme_color_bg", Color.BLACK)
+            newWebView.setBackgroundColor(savedBgColor)
+
+            webViewContainer.addView(newWebView, 0)
+            setupWebView(newWebView)
+            
+            // Lifecycle requirements for JS
+            newWebView.onResume() 
+            newWebView.resumeTimers()
+            
+            newWebView.loadUrl(URL)
+            
+            // Timeout safety (15s)
+            newWebView.postDelayed({
+                if (backgroundWebView == newWebView && !isActivityDestroyed) {
+                    cancelBackgroundRefresh()
+                    Toast.makeText(this, "Refresh timed out", Toast.LENGTH_SHORT).show()
+                }
+            }, 15000)
         }
     }
 
@@ -427,12 +452,16 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         webView.onResume()
         webView.resumeTimers()
+        backgroundWebView?.onResume() 
+        backgroundWebView?.resumeTimers()
     }
 
     override fun onPause() {
         super.onPause()
         webView.onPause()
         webView.pauseTimers()
+        backgroundWebView?.onPause()
+        backgroundWebView?.pauseTimers()
     }
 
     override fun onDestroy() {
@@ -442,9 +471,11 @@ class MainActivity : AppCompatActivity() {
         fileUploadCallback?.onReceiveValue(null)
         fileUploadCallback = null
         webView.destroy()
+        backgroundWebView?.destroy()
+        backgroundWebView = null
         super.onDestroy()
     }
-
+    
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         webView.saveState(outState)
