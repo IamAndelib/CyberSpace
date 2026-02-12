@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.webkit.JavascriptInterface
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
     private var hadError = false
 
+    @Volatile
+    private var contentScrollY = 0
+
     private val fileChooserLauncher: ActivityResultLauncher<Intent> =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             val uris = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
@@ -33,6 +37,32 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val URL = "https://cyberspace.online/"
         private const val DOMAIN = "cyberspace.online"
+
+        // Injected after every page load to report the real content scroll
+        // position back to native. Uses capture-phase listener on document
+        // to catch scroll events from CSS containers, not just the window.
+        private const val SCROLL_OBSERVER_JS = """
+            (function() {
+                if (window.__scrollObserverInstalled) return;
+                window.__scrollObserverInstalled = true;
+                var last = -1;
+                function report(y) {
+                    y = Math.round(y);
+                    if (y !== last) { last = y; AndroidScroll.report(y); }
+                }
+                function windowScroll() {
+                    report(window.scrollY || window.pageYOffset || 0);
+                }
+                window.addEventListener('scroll', windowScroll, { passive: true });
+                document.addEventListener('scroll', function(e) {
+                    var t = e.target;
+                    if (t && t !== document && t.scrollTop !== undefined) {
+                        report(t.scrollTop);
+                    }
+                }, { capture: true, passive: true });
+                windowScroll();
+            })();
+        """
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +84,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupWebView() {
+        webView.isNestedScrollingEnabled = false
+
         webView.settings.apply {
             javaScriptEnabled = true
             domStorageEnabled = true
@@ -62,6 +94,13 @@ class MainActivity : AppCompatActivity() {
             setSupportMultipleWindows(false)
             allowFileAccess = false
         }
+
+        webView.addJavascriptInterface(object {
+            @JavascriptInterface
+            fun report(scrollY: Int) {
+                contentScrollY = scrollY
+            }
+        }, "AndroidScroll")
 
         webView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
@@ -72,7 +111,7 @@ class MainActivity : AppCompatActivity() {
                 try {
                     startActivity(Intent(Intent.ACTION_VIEW, request.url))
                 } catch (_: ActivityNotFoundException) {
-                    // No app can handle this URL — just ignore
+                    // No app can handle this URL
                 }
                 return true
             }
@@ -83,6 +122,8 @@ class MainActivity : AppCompatActivity() {
                     hadError = false
                     view.clearHistory()
                 }
+                // Inject scroll observer so we know the real content scroll position
+                view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
             }
 
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
@@ -129,8 +170,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupSwipeRefresh() {
+        // Use BOTH native canScrollVertically AND JS-reported scroll position.
+        // CSS-based scrolling (common in Nuxt.js) makes canScrollVertically
+        // always return false, so the JS bridge is the reliable source.
         swipeRefresh.setOnChildScrollUpCallback { _, _ ->
-            webView.canScrollVertically(-1)
+            webView.canScrollVertically(-1) || contentScrollY > 0
         }
         swipeRefresh.setOnRefreshListener {
             webView.reload()
