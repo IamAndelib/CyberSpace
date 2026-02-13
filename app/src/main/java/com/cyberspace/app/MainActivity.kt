@@ -388,23 +388,27 @@ class MainActivity : AppCompatActivity() {
                 if (fontFamily.isNotBlank() && fontUrl.isNotBlank()) {
                     loadFont(fontFamily, fontUrl)
                 }
+                val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+                val prevBg = prefs.getInt("theme_color_bg", Color.BLACK)
+                val themeChanged = bgColor != prevBg
+                prefs.edit()
+                    .putInt("theme_color_bg", bgColor)
+                    .putInt("theme_color_fg", fgColor)
+                    .apply()
                 runOnUiThread {
                     if (isActivityDestroyed) return@runOnUiThread
                     applyTheme(bgColor, fgColor)
-                    // For background WebView: theme is applied but swap is handled
-                    // by AndroidSwap.ready() which waits for actual SPA content.
                     if (targetWebView == webView) {
                         webView.removeCallbacks(hideLoadingRunnable)
                         webView.removeCallbacks(progressTickRunnable)
                         loadingLayout.visibility = View.GONE
                         swipeRefresh.isRefreshing = false
+                        // Auto-refresh on mid-browse theme change
+                        if (themeChanged && backgroundWebView == null) {
+                            triggerBackgroundRefresh()
+                        }
                     }
                 }
-                getSharedPreferences("app_prefs", MODE_PRIVATE)
-                    .edit()
-                    .putInt("theme_color_bg", bgColor)
-                    .putInt("theme_color_fg", fgColor)
-                    .apply()
             }
         }, "AndroidTheme")
 
@@ -674,52 +678,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun triggerBackgroundRefresh() {
+        cancelBackgroundRefresh()
+
+        val newWebView = WebView(this)
+        backgroundWebView = newWebView
+
+        newWebView.layoutParams = android.widget.FrameLayout.LayoutParams(
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        newWebView.visibility = View.VISIBLE
+        newWebView.isFocusable = false
+        newWebView.isFocusableInTouchMode = false
+
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        newWebView.setBackgroundColor(prefs.getInt("theme_color_bg", Color.BLACK))
+
+        webViewContainer.addView(newWebView, 0)
+        setupWebView(newWebView)
+
+        newWebView.onResume()
+        newWebView.resumeTimers()
+        newWebView.loadUrl(webView.url ?: URL)
+
+        newWebView.postDelayed({
+            if (backgroundWebView == newWebView && !isActivityDestroyed) {
+                cancelBackgroundRefresh()
+                Toast.makeText(this, "Refresh timed out", Toast.LENGTH_SHORT).show()
+            }
+        }, 15000)
+    }
+
     private fun setupSwipeRefresh() {
         swipeRefresh.setOnChildScrollUpCallback { _, _ ->
-            // Use both native scroll check AND JS scroll reporting
-            // contentScrollY > 10 allows a tiny bit of slop, but > 0 is stricter.
-            // Let's use > 0 for strict "at top" requirement.
             webView.canScrollVertically(-1) || webView.scrollY > 0 || contentScrollY > 0
         }
         swipeRefresh.setOnRefreshListener {
-            // Cancel any existing background refresh
-            cancelBackgroundRefresh()
-            
-            // Create new background WebView
-            val newWebView = WebView(this)
-            backgroundWebView = newWebView
-            
-            newWebView.layoutParams = android.widget.FrameLayout.LayoutParams(
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                android.view.ViewGroup.LayoutParams.MATCH_PARENT
-            )
-
-            // Visible but behind current view (Index 0)
-            newWebView.visibility = View.VISIBLE
-            // Not focusable while loading
-            newWebView.isFocusable = false
-            newWebView.isFocusableInTouchMode = false
-            
-            val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
-            val savedBgColor = prefs.getInt("theme_color_bg", Color.BLACK)
-            newWebView.setBackgroundColor(savedBgColor)
-
-            webViewContainer.addView(newWebView, 0)
-            setupWebView(newWebView)
-            
-            // Lifecycle requirements for JS
-            newWebView.onResume() 
-            newWebView.resumeTimers()
-            
-            newWebView.loadUrl(webView.url ?: URL)
-            
-            // Timeout safety (15s)
-            newWebView.postDelayed({
-                if (backgroundWebView == newWebView && !isActivityDestroyed) {
-                    cancelBackgroundRefresh()
-                    Toast.makeText(this, "Refresh timed out", Toast.LENGTH_SHORT).show()
-                }
-            }, 15000)
+            swipeRefresh.isRefreshing = true
+            triggerBackgroundRefresh()
         }
     }
 
