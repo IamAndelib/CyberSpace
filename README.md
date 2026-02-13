@@ -21,7 +21,8 @@ A high-performance, mobile-optimized Android client for the **Cyberspace** platf
 
 To try out the app, you can download the latest APK from the repository:
 
-1.  **Download:** [Download cyberspace-v1.0.apk](./bin/cyberspace-v1.0.apk) (Note: In a production environment, please check the [Releases](https://github.com/YOUR_USERNAME/cyberspace-android/releases) page).
+1.  **Download:** [Download cyberspace-v1.0.apk](./bin/cyberspace-v1.0.apk?raw=true)
+    *   *Note: If you are on GitHub, click the link then click "Download" on the next page, or right-click and "Save Link As...".*
 2.  **Install:** Open the `.apk` file on your Android device.
 3.  **Permissions:** You may need to enable "Install from Unknown Sources" in your device settings.
 
