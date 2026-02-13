@@ -175,6 +175,29 @@ class MainActivity : AppCompatActivity() {
             })();
         """
 
+        private const val CONTENT_READY_JS = """
+            (function() {
+                function check() {
+                    var n = document.querySelector('#__nuxt');
+                    if (n && n.children.length > 0) {
+                        AndroidSwap.ready();
+                    } else {
+                        var obs = new MutationObserver(function(_, o) {
+                            var n2 = document.querySelector('#__nuxt');
+                            if (n2 && n2.children.length > 0) { o.disconnect(); AndroidSwap.ready(); }
+                        });
+                        if (n) {
+                            obs.observe(n, { childList: true });
+                        } else {
+                            obs.observe(document.body, { childList: true, subtree: true });
+                        }
+                        setTimeout(function() { obs.disconnect(); AndroidSwap.ready(); }, 5000);
+                    }
+                }
+                check();
+            })();
+        """
+
         private const val CUSTOM_UI_MODIFIER_JS = """
             (function() {
                 if (window.__customUiObserverInstalled) return;
@@ -368,6 +391,8 @@ class MainActivity : AppCompatActivity() {
                 runOnUiThread {
                     if (isActivityDestroyed) return@runOnUiThread
                     applyTheme(bgColor, fgColor)
+                    // For background WebView: theme is applied but swap is handled
+                    // by AndroidSwap.ready() which waits for actual SPA content.
                     if (targetWebView == webView) {
                         webView.removeCallbacks(hideLoadingRunnable)
                         webView.removeCallbacks(progressTickRunnable)
@@ -382,6 +407,22 @@ class MainActivity : AppCompatActivity() {
                     .apply()
             }
         }, "AndroidTheme")
+
+        // Content-readiness signal for background WebView swap
+        targetWebView.addJavascriptInterface(object : Any() {
+            @JavascriptInterface
+            fun ready() {
+                runOnUiThread {
+                    if (isActivityDestroyed || targetWebView != backgroundWebView) return@runOnUiThread
+                    // Content is in the DOM — now wait for compositor to paint it
+                    targetWebView.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
+                        override fun onComplete(requestId: Long) {
+                            runOnUiThread { swapWebView(targetWebView) }
+                        }
+                    })
+                }
+            }
+        }, "AndroidSwap")
 
         targetWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
@@ -425,15 +466,11 @@ class MainActivity : AppCompatActivity() {
                     view.evaluateJavascript(CUSTOM_UI_MODIFIER_JS, null)
                 }
 
-                // If this is the background WebView, wait for visual state to be ready, then swap
                 if (view == backgroundWebView) {
-                    view.postVisualStateCallback(0, object : WebView.VisualStateCallback() {
-                        override fun onComplete(requestId: Long) {
-                             runOnUiThread {
-                                 swapWebView(view)
-                             }
-                        }
-                    })
+                    // Inject content-readiness observer: waits for #__nuxt to have
+                    // children (SPA rendered), then signals AndroidSwap.ready()
+                    // which chains postVisualStateCallback before swapping.
+                    view.evaluateJavascript(CONTENT_READY_JS, null)
                 } else if (view == webView) {
                     // Theme observer will hide the overlay when CSS is applied.
                     // Fallback: hide after 3s in case theme never reports.
@@ -674,7 +711,7 @@ class MainActivity : AppCompatActivity() {
             newWebView.onResume() 
             newWebView.resumeTimers()
             
-            newWebView.loadUrl(URL)
+            newWebView.loadUrl(webView.url ?: URL)
             
             // Timeout safety (15s)
             newWebView.postDelayed({
