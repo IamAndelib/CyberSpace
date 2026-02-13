@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -41,6 +42,10 @@ class MainActivity : AppCompatActivity() {
     
     // Track the background WebView used for seamless refresh
     private var backgroundWebView: WebView? = null
+
+    // Cached web font typeface
+    private var cachedTypeface: Typeface? = null
+    private var cachedFontName: String? = null
 
     private val progressTickRunnable = object : Runnable {
         override fun run() {
@@ -96,6 +101,77 @@ class MainActivity : AppCompatActivity() {
                     }
                 }, { capture: true, passive: true });
                 report(ws());
+            })();
+        """
+
+        private const val THEME_OBSERVER_JS = """
+            (function() {
+                if (window.__themeObserverInstalled) return;
+                window.__themeObserverInstalled = true;
+                var lastKey = '';
+                var cvs = document.createElement('canvas').getContext('2d');
+                function toRgb(c) {
+                    if (!c || c === 'transparent' || c === 'rgba(0, 0, 0, 0)') return null;
+                    if (c.indexOf('rgb(') === 0) return c;
+                    cvs.fillStyle = '#000000'; cvs.fillStyle = c; var v = cvs.fillStyle;
+                    if (v.charAt(0) === '#') {
+                        return 'rgb(' + parseInt(v.substr(1,2),16) + ', ' + parseInt(v.substr(3,2),16) + ', ' + parseInt(v.substr(5,2),16) + ')';
+                    }
+                    return v;
+                }
+                function findFontUrl(family) {
+                    var name = family.split(',')[0].trim().replace(/["']/g, '');
+                    if (!name) return '';
+                    try {
+                        for (var i = 0; i < document.styleSheets.length; i++) {
+                            var rules; try { rules = document.styleSheets[i].cssRules; } catch(e) { continue; }
+                            if (!rules) continue;
+                            for (var j = 0; j < rules.length; j++) {
+                                if (rules[j].type !== 5) continue;
+                                var ff = rules[j].style.getPropertyValue('font-family').replace(/["']/g, '').trim();
+                                if (ff.toLowerCase() !== name.toLowerCase()) continue;
+                                var src = rules[j].style.getPropertyValue('src');
+                                var urls = []; var re = /url\(["']?([^"')]+)["']?\)/g; var m;
+                                while ((m = re.exec(src)) !== null) urls.push(m[1]);
+                                var pick = urls.find(function(u){return /\.ttf/i.test(u)})
+                                    || urls.find(function(u){return /\.woff(?!2)/i.test(u)})
+                                    || urls[0];
+                                if (pick) return new URL(pick, document.styleSheets[i].href || document.baseURI).href;
+                            }
+                        }
+                    } catch(e) {}
+                    return '';
+                }
+                function readTheme() {
+                    var s = getComputedStyle(document.documentElement);
+                    var bg = toRgb(s.getPropertyValue('--color-bg').trim());
+                    var fg = toRgb(s.getPropertyValue('--color-fg').trim());
+                    var font = s.getPropertyValue('--theme-font-mono').trim();
+                    if (!bg) bg = toRgb(getComputedStyle(document.body).backgroundColor);
+                    if (!fg) fg = toRgb(getComputedStyle(document.body).color);
+                    return { bg: bg, fg: fg, font: font };
+                }
+                var debounce = null;
+                function report() {
+                    if (debounce) clearTimeout(debounce);
+                    debounce = setTimeout(function() {
+                        var t = readTheme();
+                        var key = (t.bg||'') + '|' + (t.fg||'') + '|' + (t.font||'');
+                        if (t.bg && key !== lastKey) {
+                            lastKey = key;
+                            var fontUrl = t.font ? findFontUrl(t.font) : '';
+                            AndroidTheme.reportTheme(t.bg, t.fg || 'rgb(255, 255, 255)', t.font || '', fontUrl);
+                        }
+                    }, 50);
+                }
+                var obs = new MutationObserver(report);
+                obs.observe(document.documentElement, { attributes: true });
+                obs.observe(document.body, { attributes: true, childList: true });
+                var nuxt = document.querySelector('#__nuxt');
+                if (nuxt) obs.observe(nuxt, { attributes: true, childList: true, subtree: true });
+                report();
+                setTimeout(report, 300);
+                setTimeout(report, 1000);
             })();
         """
 
@@ -171,10 +247,22 @@ class MainActivity : AppCompatActivity() {
         loadingText = findViewById(R.id.loadingText)
         rootLayout = findViewById(R.id.rootLayout)
 
-        // Load saved theme colors
+        // Load saved theme
         val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         val savedBgColor = prefs.getInt("theme_color_bg", Color.BLACK)
         val savedFgColor = prefs.getInt("theme_color_fg", Color.WHITE)
+
+        // Restore cached font from disk
+        val savedFontPath = prefs.getString("theme_font_path", null)
+        if (savedFontPath != null) {
+            try {
+                val f = java.io.File(savedFontPath)
+                if (f.exists()) {
+                    cachedTypeface = Typeface.createFromFile(f)
+                    cachedFontName = prefs.getString("theme_font_name", null)
+                }
+            } catch (_: Exception) {}
+        }
 
         applyTheme(savedBgColor, savedFgColor)
 
@@ -200,9 +288,10 @@ class MainActivity : AppCompatActivity() {
         loadingSpinner.indeterminateTintList = ColorStateList.valueOf(fgColor)
         loadingText.setTextColor(fgColor)
         swipeRefresh.setColorSchemeColors(fgColor)
-        // Note: We don't change webView background here constantly to avoid flashes,
-        // it's handled on creation.
         loadingLayout.setBackgroundColor(bgColor)
+
+        // Apply cached web font if available, otherwise use generic fallback
+        loadingText.typeface = cachedTypeface ?: Typeface.create("monospace", Typeface.NORMAL)
 
         window.statusBarColor = bgColor
         window.navigationBarColor = bgColor
@@ -210,6 +299,32 @@ class MainActivity : AppCompatActivity() {
         val light = ColorUtils.calculateLuminance(bgColor) > 0.5
         insetsController.isAppearanceLightStatusBars = light
         insetsController.isAppearanceLightNavigationBars = light
+    }
+
+    private fun parseCssColor(css: String): Int? {
+        val trimmed = css.trim()
+        // Handle hex colors (#RGB or #RRGGBB)
+        if (trimmed.startsWith("#")) {
+            val hex = trimmed.substring(1)
+            return try {
+                when (hex.length) {
+                    3 -> Color.rgb(
+                        Integer.parseInt("${hex[0]}${hex[0]}", 16),
+                        Integer.parseInt("${hex[1]}${hex[1]}", 16),
+                        Integer.parseInt("${hex[2]}${hex[2]}", 16)
+                    )
+                    else -> Color.parseColor(trimmed)
+                }
+            } catch (_: Exception) { null }
+        }
+        // Handle rgb()/rgba()
+        val regex = Regex("""rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)""")
+        val match = regex.find(trimmed) ?: return null
+        return Color.rgb(
+            match.groupValues[1].toInt().coerceIn(0, 255),
+            match.groupValues[2].toInt().coerceIn(0, 255),
+            match.groupValues[3].toInt().coerceIn(0, 255)
+        )
     }
 
     private fun isTrustedHost(url: String?): Boolean {
@@ -241,11 +356,33 @@ class MainActivity : AppCompatActivity() {
             }
         }, "AndroidScroll")
         
-        // Pass the theme update responsibility to a passive interface if needed,
-        // or just let the page load naturally. We removed the ACTIVE theme reporter.
-        // If we want to detect theme changes *after* load, we can add a passive observer,
-        // but for now let's keep it simple as requested.
-        
+        targetWebView.addJavascriptInterface(object : Any() {
+            @JavascriptInterface
+            fun reportTheme(bgCss: String, fgCss: String, fontFamily: String, fontUrl: String) {
+                val bgColor = parseCssColor(bgCss) ?: return
+                val fgColor = parseCssColor(fgCss) ?: Color.WHITE
+                // Start font download in background (before UI thread work)
+                if (fontFamily.isNotBlank() && fontUrl.isNotBlank()) {
+                    loadFont(fontFamily, fontUrl)
+                }
+                runOnUiThread {
+                    if (isActivityDestroyed) return@runOnUiThread
+                    applyTheme(bgColor, fgColor)
+                    if (targetWebView == webView) {
+                        webView.removeCallbacks(hideLoadingRunnable)
+                        webView.removeCallbacks(progressTickRunnable)
+                        loadingLayout.visibility = View.GONE
+                        swipeRefresh.isRefreshing = false
+                    }
+                }
+                getSharedPreferences("app_prefs", MODE_PRIVATE)
+                    .edit()
+                    .putInt("theme_color_bg", bgColor)
+                    .putInt("theme_color_fg", fgColor)
+                    .apply()
+            }
+        }, "AndroidTheme")
+
         targetWebView.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
                 val host = request.url.host ?: return false
@@ -283,8 +420,9 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPageFinished(view: WebView, url: String?) {
                 if (isTrustedHost(url)) {
-                    view.evaluateJavascript(CUSTOM_UI_MODIFIER_JS, null)
+                    view.evaluateJavascript(THEME_OBSERVER_JS, null)
                     view.evaluateJavascript(SCROLL_OBSERVER_JS, null)
+                    view.evaluateJavascript(CUSTOM_UI_MODIFIER_JS, null)
                 }
 
                 // If this is the background WebView, wait for visual state to be ready, then swap
@@ -297,9 +435,10 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 } else if (view == webView) {
-                    // Normal load on active view
+                    // Theme observer will hide the overlay when CSS is applied.
+                    // Fallback: hide after 3s in case theme never reports.
                     view.removeCallbacks(hideLoadingRunnable)
-                    hideLoadingRunnable.run()
+                    view.postDelayed(hideLoadingRunnable, 3000)
                 }
             }
 
@@ -384,6 +523,118 @@ class MainActivity : AppCompatActivity() {
         webViewContainer.removeView(bgView)
         bgView.destroy()
         swipeRefresh.isRefreshing = false
+    }
+
+    private fun loadFont(fontFamily: String, fontUrl: String) {
+        val fontName = fontFamily.split(",").first().trim()
+            .removeSurrounding("\"").removeSurrounding("'").trim()
+        if (fontName.isBlank() || fontName == cachedFontName) return
+
+        // Check disk cache first
+        val cacheFile = java.io.File(cacheDir, "font_${fontName.replace(Regex("[^a-zA-Z0-9]"), "_")}")
+        if (cacheFile.exists()) {
+            try {
+                val tf = Typeface.createFromFile(cacheFile)
+                cachedTypeface = tf
+                cachedFontName = fontName
+                runOnUiThread {
+                    if (!isActivityDestroyed) loadingText.typeface = tf
+                }
+                getSharedPreferences("app_prefs", MODE_PRIVATE).edit()
+                    .putString("theme_font_path", cacheFile.absolutePath)
+                    .putString("theme_font_name", fontName)
+                    .apply()
+                return
+            } catch (_: Exception) { cacheFile.delete() }
+        }
+
+        // Download in background
+        Thread {
+            try {
+                val conn = java.net.URL(fontUrl).openConnection() as java.net.HttpURLConnection
+                conn.connectTimeout = 5000
+                conn.readTimeout = 10000
+                val rawData = conn.inputStream.use { it.readBytes() }
+
+                // Convert WOFF to OTF if needed (WOFF signature: 'wOFF' = 0x774F4646)
+                val fontData = if (rawData.size > 4 &&
+                    rawData[0] == 0x77.toByte() && rawData[1] == 0x4F.toByte() &&
+                    rawData[2] == 0x46.toByte() && rawData[3] == 0x46.toByte()) {
+                    convertWoffToOtf(rawData) ?: return@Thread
+                } else {
+                    rawData
+                }
+
+                cacheFile.writeBytes(fontData)
+                val tf = Typeface.createFromFile(cacheFile)
+                cachedTypeface = tf
+                cachedFontName = fontName
+                runOnUiThread {
+                    if (!isActivityDestroyed) loadingText.typeface = tf
+                }
+                getSharedPreferences("app_prefs", MODE_PRIVATE).edit()
+                    .putString("theme_font_path", cacheFile.absolutePath)
+                    .putString("theme_font_name", fontName)
+                    .apply()
+            } catch (_: Exception) {
+                cacheFile.delete()
+            }
+        }.start()
+    }
+
+    private fun convertWoffToOtf(woff: ByteArray): ByteArray? {
+        try {
+            if (woff.size < 44) return null
+            val buf = java.nio.ByteBuffer.wrap(woff).order(java.nio.ByteOrder.BIG_ENDIAN)
+            if (buf.int != 0x774F4646) return null
+            val flavor = buf.int
+            buf.int // length
+            val numTables = buf.short.toInt() and 0xFFFF
+            buf.short // reserved
+            val totalSfntSize = buf.int
+            if (totalSfntSize > 10 * 1024 * 1024) return null
+            buf.position(44)
+
+            data class T(val tag: Int, val off: Int, val cLen: Int, val oLen: Int, val csum: Int)
+            val tables = (0 until numTables).map { T(buf.int, buf.int, buf.int, buf.int, buf.int) }
+
+            val otf = java.nio.ByteBuffer.allocate(totalSfntSize).order(java.nio.ByteOrder.BIG_ENDIAN)
+            otf.putInt(flavor)
+            otf.putShort(numTables.toShort())
+            var p = 1; var es = 0
+            while (p * 2 <= numTables) { p *= 2; es++ }
+            val sr = p * 16
+            otf.putShort(sr.toShort())
+            otf.putShort(es.toShort())
+            otf.putShort((numTables * 16 - sr).toShort())
+
+            var dataOff = 12 + numTables * 16
+            val entries = tables.map { t ->
+                val data = if (t.cLen < t.oLen) {
+                    val inf = java.util.zip.Inflater()
+                    inf.setInput(woff, t.off, t.cLen)
+                    val result = ByteArray(t.oLen)
+                    inf.inflate(result)
+                    inf.end()
+                    result
+                } else {
+                    woff.copyOfRange(t.off, t.off + t.oLen)
+                }
+                otf.putInt(t.tag); otf.putInt(t.csum); otf.putInt(dataOff); otf.putInt(t.oLen)
+                val pair = Pair(dataOff, data)
+                dataOff += (t.oLen + 3) and 3.inv()
+                pair
+            }
+
+            for ((off, data) in entries) {
+                if (off + data.size > totalSfntSize) return null
+                otf.position(off)
+                otf.put(data)
+            }
+            return otf.array()
+        } catch (_: Exception) {
+            return null
+        }
     }
 
     private fun setupSwipeRefresh() {
