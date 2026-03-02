@@ -2,7 +2,7 @@
 /build/
 /app/build/
 *.apk
-!releases/*.apk
+/releases/
 
 # Gradle
 .gradle/

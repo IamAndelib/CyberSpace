@@ -8,7 +8,7 @@ This app delivers a native-like fullscreen experience using a WebView, with no b
 
 ## Download
 
-Grab the latest APK from the [`releases/`](./releases/) folder and install it directly on your Android device.
+Grab the latest APK from the [**Releases**](https://github.com/IamAndelib/CyberSpace/releases) page and install it directly on your Android device.
 
 > You may need to enable **"Install from unknown sources"** in your device settings.
 
