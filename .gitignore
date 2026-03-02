@@ -9,6 +9,11 @@
 local.properties
 gradle/wrapper/gradle-wrapper.jar
 
+# Signing
+keystore.jks
+*.keystore
+*.p12
+
 # IDE
 .idea/
 *.iml

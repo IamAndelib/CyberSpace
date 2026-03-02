@@ -1,5 +1,7 @@
 # Cyberspace Android
 
+[![Android CI](https://github.com/IamAndelib/CyberSpace/actions/workflows/android.yml/badge.svg)](https://github.com/IamAndelib/CyberSpace/actions/workflows/android.yml)
+
 An unofficial Android wrapper for [beta.cyberspace.online](https://beta.cyberspace.online) — a social media platform reimagined.
 
 This app delivers a native-like fullscreen experience using a WebView, with no browser UI, transparent status bar, and edge-to-edge layout.
@@ -22,28 +24,44 @@ Grab the latest APK from the [`releases/`](./releases/) folder and install it di
 
 ### Prerequisites
 
-- JDK 17
+- JDK 21
 - Android SDK (API 34)
-- Gradle 8.10+
+- Gradle 8.9+
 
 ### Steps
 
 ```bash
 git clone https://github.com/IamAndelib/CyberSpace.git
 cd CyberSpace
-./gradlew assembleRelease
+./gradlew assembleDebug
 ```
 
 The output APK will be at:
 ```
-app/build/outputs/apk/release/app-release.apk
+app/build/outputs/apk/debug/app-debug.apk
+```
+
+For a minified release build (requires signing config):
+```bash
+./gradlew assembleRelease
 ```
 
 ## Tech Stack
 
-- Java
-- AndroidX Browser & Core libraries
-- Gradle 8.10 / AGP 8.3
+- Kotlin 2.0.20
+- AndroidX Core KTX & Browser libraries
+- AGP 8.5.2 / Gradle 8.9
+- Kotlin DSL (`*.gradle.kts`) + version catalog (`libs.versions.toml`)
+
+## CI/CD
+
+GitHub Actions builds the debug APK on every pull request and the signed release APK on every push to `main`. Artifacts are uploaded for 7 days (debug) / 30 days (release).
+
+Required secrets for release signing:
+- `KEYSTORE_FILE` — base64-encoded `.jks` keystore
+- `KEYSTORE_PASSWORD`
+- `KEY_ALIAS`
+- `KEY_PASSWORD`
 
 ## License
 
