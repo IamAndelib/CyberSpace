@@ -1,42 +1,50 @@
 # Cyberspace Android
 
-A high-performance, mobile-optimized Android client for the **Cyberspace** platform. This app is designed to provide a native-like experience for [cyberspace.online](https://cyberspace.online), featuring advanced dynamic theming, seamless navigation, and custom UI enhancements.
+An unofficial Android wrapper for [beta.cyberspace.online](https://beta.cyberspace.online) — a social media platform reimagined.
 
-## 🚀 Key Features
+This app delivers a native-like fullscreen experience using a WebView, with no browser UI, transparent status bar, and edge-to-edge layout.
 
-*   **Seamless Refresh:** Uses a dual-WebView "double buffering" strategy to eliminate loading flickers. Content is swapped only when the page is fully rendered.
-*   **Dynamic Native Theming:** Real-time synchronization of Android system bars and UI components with the website's CSS variables and theme state.
-*   **Web-to-Native Font Bridging:** Automatically downloads, converts (WOFF to OTF), and applies the platform's custom typography to native app elements.
-*   **Mobile-Optimized UI:** Injects custom SVGs and modifies DOM elements to transform desktop-centric web buttons into mobile-friendly icons.
-*   **Edge-to-Edge Experience:** Full support for modern Android 15 (SDK 35) edge-to-edge layouts and gesture navigation.
-*   **Deep Linking:** Seamlessly handles `cyberspace.online` links from other apps.
+## Download
 
-## 🛠 Technical Highlights
+Grab the latest APK from the [`releases/`](./releases/) folder and install it directly on your Android device.
 
-*   **WOFF Converter:** A custom binary implementation to handle web fonts which are not natively supported by Android's `Typeface` API.
-*   **Mutation Observers:** Persistent JS bridges to monitor DOM and theme changes without manual polling.
-*   **Smart Refresh:** A custom `SwipeRefreshLayout` implementation that handles complex WebView scroll states to prevent accidental triggers.
+> You may need to enable **"Install from unknown sources"** in your device settings.
 
-## 📥 Installation
+## Features
 
-To try out the app, you can download the latest APK from the repository:
+- Fullscreen WebView — no address bar, no browser chrome
+- Transparent status bar with edge-to-edge layout
+- Back button navigates within the app
+- JavaScript, DOM storage and caching enabled
+- Works on Android 5.0 (API 21) and above
 
-1.  **Download:** [Download cyberspace-v1.0.apk](./bin/cyberspace-v1.0.apk?raw=true)
-    *   *Note: If you are on GitHub, click the link then click "Download" on the next page, or right-click and "Save Link As...".*
-2.  **Install:** Open the `.apk` file on your Android device.
-3.  **Permissions:** You may need to enable "Install from Unknown Sources" in your device settings.
-
-## 🏗 Development
+## Build from Source
 
 ### Prerequisites
-*   Android Studio Ladybug or newer.
-*   JDK 17.
-*   Android SDK 35 (API 35).
 
-### Building from source
+- JDK 17
+- Android SDK (API 34)
+- Gradle 8.10+
+
+### Steps
+
 ```bash
-./gradlew assembleDebug
+git clone https://github.com/IamAndelib/CyberSpace.git
+cd CyberSpace
+./gradlew assembleRelease
 ```
 
-## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+The output APK will be at:
+```
+app/build/outputs/apk/release/app-release.apk
+```
+
+## Tech Stack
+
+- Java
+- AndroidX Browser & Core libraries
+- Gradle 8.10 / AGP 8.3
+
+## License
+
+MIT License

@@ -1,17 +1,21 @@
-*.iml
-.gradle
-.idea
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Build outputs
+/build/
+/app/build/
+*.apk
+!releases/*.apk
+
+# Gradle
+.gradle/
 local.properties
-/app/build
+gradle/wrapper/gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.kotlin/
+*.iws
+*.ipr
+
+# OS
+.DS_Store
+Thumbs.db
