@@ -8,7 +8,7 @@ The "Cyberspace" name, logo and icon, and all content on [cyberspace.online](htt
 
 ## What the license covers
 
-The [MIT License](LICENSE) in this repository covers only the original files in this repository: the documentation, the release workflow and the app packaging. It does **not** cover Cyberspace's content, name, logo, icon or other trademarks, and it grants no rights to them.
+The [MIT License](LICENSE) in this repository covers only the original files in this repository: the Android app's source code, the documentation, the workflows and the app packaging. It does **not** cover Cyberspace's content, name, logo, icon or other trademarks, and it grants no rights to them.
 
 ## Your account and data
 

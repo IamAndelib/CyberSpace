@@ -70,7 +70,7 @@ Web push notifications aren't supported, because those need a full browser.
 
 | Version | Date | File | Size | Notes |
 | --- | --- | --- | --- | --- |
-| **1.1** | 2026-10-05 | [`Cyberspace-v1.1.apk`](releases/Cyberspace-v1.1.apk) | __SIZE11__ | Latest. Built from source, works on any Android 7.0+ |
+| **1.1** | 2026-10-05 | [`Cyberspace-v1.1.apk`](releases/Cyberspace-v1.1.apk) | ~426 KB | Latest. Built from source, works on any Android 7.0+ |
 | 1.0 | 2026-10-05 | [`Cyberspace-v1.0.apk`](releases/Cyberspace-v1.0.apk) | ~195 KB | Legacy. Themes only partly apply |
 
 Each APK has a matching checksum file next to it, for example [`Cyberspace-v1.1.apk.sha256`](releases/Cyberspace-v1.1.apk.sha256).
@@ -112,7 +112,7 @@ That's all. The app asks for no storage, location, contacts or notification perm
 The SHA-256 checksum of `Cyberspace-v1.1.apk` is:
 
 ```text
-__SHA11__
+848387b6480d51175da36d8a9cb06f86f22f4cdf1ae33e896de1cf7d91fe4b37
 ```
 
 Put the APK and its `.sha256` file in the same folder, then run:
@@ -134,7 +134,7 @@ Both commands should print `Cyberspace-v1.1.apk: OK`.
 **Windows (PowerShell)**
 
 ```powershell
-(Get-FileHash .\Cyberspace-v1.1.apk -Algorithm SHA256).Hash -eq '__SHA11__'
+(Get-FileHash .\Cyberspace-v1.1.apk -Algorithm SHA256).Hash -eq '848387b6480d51175da36d8a9cb06f86f22f4cdf1ae33e896de1cf7d91fe4b37'
 ```
 
 This should print `True`.
@@ -164,6 +164,18 @@ keytool -printcert -jarfile Cyberspace-v1.1.apk
 The SHA-256 value in the output should match the fingerprint above.
 
 ## Screenshots
+
+**In the app** (captured on an Android emulator by the CI test):
+
+<table>
+  <tr>
+    <td align="center"><img src="media/screenshots/app-01-boot.png" width="240" alt="App starting up with the CyberOS boot screen"><br><sub>Starting up</sub></td>
+    <td align="center"><img src="media/screenshots/app-02-c64.png" width="240" alt="App with the C64 theme applied"><br><sub>C64 theme, status bar to match</sub></td>
+    <td align="center"><img src="media/screenshots/app-03-c64-relaunch.png" width="240" alt="App relaunched, still in the C64 theme"><br><sub>Theme kept after a restart</sub></td>
+  </tr>
+</table>
+
+**Around the site:**
 
 <table>
   <tr>
