@@ -1,0 +1,105 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Publish GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Resolve version and files
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+          APK="releases/Cyberspace-v${VERSION}.apk"
+          SHA_FILE="${APK}.sha256"
+
+          missing=0
+          if [ ! -f "$APK" ]; then
+            echo "::error title=APK not found::Tag ${GITHUB_REF_NAME} expects ${APK}, but it is not in the repository."
+            missing=1
+          fi
+          if [ ! -f "$SHA_FILE" ]; then
+            echo "::error title=Checksum not found::Tag ${GITHUB_REF_NAME} expects ${SHA_FILE}, but it is not in the repository."
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            exit 1
+          fi
+
+          {
+            echo "version=${VERSION}"
+            echo "apk=${APK}"
+            echo "sha_file=${SHA_FILE}"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Verify checksum
+        id: checksum
+        shell: bash
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+          APK: ${{ steps.meta.outputs.apk }}
+        run: |
+          set -euo pipefail
+          (cd releases && sha256sum -c "Cyberspace-v${VERSION}.apk.sha256")
+          HASH="$(sha256sum "$APK" | cut -d' ' -f1)"
+          echo "hash=${HASH}" >> "$GITHUB_OUTPUT"
+
+      - name: Extract release notes from CHANGELOG.md
+        shell: bash
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+          HASH: ${{ steps.checksum.outputs.hash }}
+        run: |
+          set -euo pipefail
+          # Print the body of the "## [VERSION]" section, stopping at the next
+          # "## [" heading or the link references at the end of the file.
+          # Leading and trailing blank lines are trimmed.
+          awk -v ver="$VERSION" '
+            index($0, "## [" ver "]") == 1 { found = 1; next }
+            found && (/^## \[/ || /^\[[^]]+\]: /) { exit }
+            found { lines[++n] = $0 }
+            END {
+              s = 1; while (s <= n && lines[s] ~ /^[[:space:]]*$/) s++
+              e = n; while (e >= s && lines[e] ~ /^[[:space:]]*$/) e--
+              for (i = s; i <= e; i++) print lines[i]
+            }
+          ' CHANGELOG.md > release-notes.md
+
+          if [ ! -s release-notes.md ]; then
+            echo "::warning::No CHANGELOG.md section found for ${VERSION}; using a generic note."
+            echo "Cyberspace for Android, version ${VERSION}." > release-notes.md
+          fi
+
+          NOTICE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/NOTICE.md"
+          {
+            echo
+            echo "SHA-256: \`${HASH}\`"
+            echo
+            echo "**Unofficial app** — see [NOTICE.md](${NOTICE_URL})"
+          } >> release-notes.md
+
+          echo "----- release-notes.md -----"
+          cat release-notes.md
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Cyberspace v${{ steps.meta.outputs.version }}
+          body_path: release-notes.md
+          files: |
+            ${{ steps.meta.outputs.apk }}
+            ${{ steps.meta.outputs.sha_file }}
+          fail_on_unmatched_files: true
+          make_latest: true
