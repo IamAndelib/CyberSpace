@@ -36,7 +36,7 @@ class ThemeSwitchTest {
             val before = screenshot("01-default")
             assertTrue("default theme should not already be C64 blue", !isC64Blue(dominantColor(before)))
 
-            js(scenario, "findButton('C64').click(); 'clicked'")
+            assertEquals("\"clicked\"", js(scenario, "(findButton('C64').click(), 'clicked')"))
             waitFor(scenario, "document.documentElement.dataset.theme === 'c64'")
             Thread.sleep(2_000)
             val after = dominantColor(screenshot("02-c64"))

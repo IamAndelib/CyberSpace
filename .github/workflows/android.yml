@@ -11,8 +11,8 @@ on:
       - '.github/workflows/android.yml'
   workflow_dispatch:
     inputs:
-      publish_unsigned:
-        description: 'Push the unsigned release APK to the build-output branch (for offline signing)'
+      publish:
+        description: 'Push the unsigned release APK (build-output branch) and test screenshots (build-screens branch)'
         type: boolean
         default: false
 
@@ -53,7 +53,7 @@ jobs:
           retention-days: 14
 
       - name: Publish unsigned release APK to build-output branch
-        if: github.event_name == 'workflow_dispatch' && inputs.publish_unsigned
+        if: github.event_name == 'workflow_dispatch' && inputs.publish
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -73,6 +73,8 @@ jobs:
   ui-test:
     name: Emulator theme test
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -104,6 +106,23 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           script: ./android/scripts/ui-test.sh
+
+      - name: Publish screenshots to build-screens branch
+        if: always() && github.event_name == 'workflow_dispatch' && inputs.publish
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/build-screens"
+          mkdir -p "$out"
+          cp -r android/build/ui-screens/. "$out/" || true
+          cd "$out"
+          echo "Screenshots from ${GITHUB_SHA}, run ${GITHUB_RUN_ID}" > SOURCE.txt
+          git init -q -b build-screens
+          git add -A
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "UI test screenshots of ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" build-screens
 
       - name: Upload screenshots and test report
         if: always()
