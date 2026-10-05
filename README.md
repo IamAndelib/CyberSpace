@@ -147,7 +147,26 @@ The SHA-256 value in the output should match the fingerprint above.
 
 ## Screenshots
 
-Screenshots are coming soon. They will go in `media/screenshots/`.
+<table>
+  <tr>
+    <td align="center"><img src="media/screenshots/01-home.png" width="240" alt="Cyberspace home screen"><br><sub>Home</sub></td>
+    <td align="center"><img src="media/screenshots/02-menu.png" width="240" alt="Navigation menu"><br><sub>Navigation menu</sub></td>
+    <td align="center"><img src="media/screenshots/03-fortune.png" width="240" alt="Fortune page"><br><sub>Fortune</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="media/screenshots/04-wiki.png" width="240" alt="Wiki page"><br><sub>Wiki</sub></td>
+    <td align="center"><img src="media/screenshots/05-faq.png" width="240" alt="RTFM/FAQ page"><br><sub>RTFM / FAQ</sub></td>
+    <td align="center"><img src="media/screenshots/06-globe.png" width="240" alt="Globe of users"><br><sub>Globe</sub></td>
+  </tr>
+</table>
+
+Cyberspace comes with a set of retro themes (shown here: C64, VT320, Crypt and Bubblegum):
+
+<p align="center">
+  <img src="media/screenshots/07-themes.png" alt="Cyberspace themes: C64, VT320, Crypt and Bubblegum" width="100%">
+</p>
+
+<sub>Screens show <a href="https://beta.cyberspace.online">beta.cyberspace.online</a> at a phone screen size, logged out, as the app displays it fullscreen. Content belongs to Cyberspace and its users.</sub>
 
 ## Updating
 
