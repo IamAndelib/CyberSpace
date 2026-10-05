@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="cs_black">#FF000000</color>
+    <color name="cs_cream">#FFEFE6CC</color>
+    <color name="cs_cream_dim">#99EFE6CC</color>
+</resources>
