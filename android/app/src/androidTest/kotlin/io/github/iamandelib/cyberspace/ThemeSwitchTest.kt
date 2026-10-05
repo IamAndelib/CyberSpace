@@ -47,8 +47,12 @@ class ThemeSwitchTest {
             waitFor(scenario, "!!findButton('C64')")
             Thread.sleep(2_000)
             assertEquals("\"c64\"", js(scenario, "document.documentElement.dataset.theme"))
-            val relaunched = dominantColor(screenshot("03-c64-relaunched"))
+            Thread.sleep(1_000)
+            val shot = screenshot("03-c64-relaunched")
+            val relaunched = dominantColor(shot)
             assertTrue("C64 theme should persist, was ${hex(relaunched)}", isC64Blue(relaunched))
+            val statusBar = dominantColor(shot, maxY = 40)
+            assertTrue("status bar should follow the theme, was ${hex(statusBar)}", isC64Blue(statusBar))
         }
     }
 
@@ -83,10 +87,10 @@ class ThemeSwitchTest {
     }
 
     /** Most common colour on screen, sampled on a grid and bucketed to 8 levels per channel. */
-    private fun dominantColor(bitmap: Bitmap): Int {
+    private fun dominantColor(bitmap: Bitmap, maxY: Int = bitmap.height): Int {
         val counts = HashMap<Int, Int>()
         val step = 8
-        for (y in 0 until bitmap.height step step) {
+        for (y in 0 until minOf(maxY, bitmap.height) step step) {
             for (x in 0 until bitmap.width step step) {
                 val c = bitmap.getPixel(x, y)
                 val key = Color.rgb(Color.red(c) / 32 * 32, Color.green(c) / 32 * 32, Color.blue(c) / 32 * 32)

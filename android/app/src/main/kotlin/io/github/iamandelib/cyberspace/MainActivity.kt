@@ -285,20 +285,34 @@ class MainActivity : ComponentActivity() {
         private const val SPLASH_MAX_MS = 4_000L
         private const val MATCH = ViewGroup.LayoutParams.MATCH_PARENT
 
-        /** Reports `<meta name="theme-color">` now and whenever the site changes it. Read-only. */
+        /**
+         * Reports the active theme's background colour now and whenever it changes. Read-only.
+         * The site sets `<meta name="theme-color">` when the theme is switched, but on load only
+         * its `--color-bg` CSS variable reflects the saved theme, so that is the fallback.
+         */
         private const val THEME_WATCH_JS = """
             (function () {
               if (window.__cyberspaceAndroidWatch) return;
               window.__cyberspaceAndroidWatch = true;
               var last = null;
-              function send() {
+              function current() {
+                var root = document.documentElement;
+                var bg = getComputedStyle(root).getPropertyValue('--color-bg').trim();
                 var m = document.querySelector('meta[name="theme-color"]');
-                var c = m ? m.getAttribute('content') : '';
+                var meta = m ? (m.getAttribute('content') || '').trim() : '';
+                return bg || meta;
+              }
+              function send() {
+                var c = current();
                 if (c && c !== last) { last = c; CyberspaceAndroid.onThemeColor(c); }
               }
               send();
-              new MutationObserver(send).observe(document.head, {
+              var observer = new MutationObserver(send);
+              observer.observe(document.head, {
                 subtree: true, childList: true, attributes: true, attributeFilter: ['content']
+              });
+              observer.observe(document.documentElement, {
+                attributes: true, attributeFilter: ['data-theme', 'class', 'style']
               });
             })();
         """
@@ -317,7 +331,9 @@ class MainActivity : ComponentActivity() {
                 if (rgb.size < 3) return null
                 return Color.rgb(rgb[0].toInt(), rgb[1].toInt(), rgb[2].toInt())
             }
-            return runCatching { Color.parseColor(v) }.getOrNull()
+            // Expand CSS shorthand (#rgb) which Color.parseColor does not accept.
+            val hex = if (v.length == 4 && v.startsWith("#")) "#" + v.drop(1).map { "$it$it" }.joinToString("") else v
+            return runCatching { Color.parseColor(hex) }.getOrNull()
         }
     }
 }
