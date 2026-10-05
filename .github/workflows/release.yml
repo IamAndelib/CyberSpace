@@ -4,6 +4,11 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, without the leading v (e.g. 1.0). The tag vX.Y is created if it does not exist.'
+        required: true
 
 jobs:
   release:
@@ -19,19 +24,26 @@ jobs:
       - name: Resolve version and files
         id: meta
         shell: bash
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          VERSION="${GITHUB_REF_NAME#v}"
+          if [ -n "${INPUT_VERSION:-}" ]; then
+            VERSION="${INPUT_VERSION#v}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          TAG="v${VERSION}"
           APK="releases/Cyberspace-v${VERSION}.apk"
           SHA_FILE="${APK}.sha256"
 
           missing=0
           if [ ! -f "$APK" ]; then
-            echo "::error title=APK not found::Tag ${GITHUB_REF_NAME} expects ${APK}, but it is not in the repository."
+            echo "::error title=APK not found::Tag ${TAG} expects ${APK}, but it is not in the repository."
             missing=1
           fi
           if [ ! -f "$SHA_FILE" ]; then
-            echo "::error title=Checksum not found::Tag ${GITHUB_REF_NAME} expects ${SHA_FILE}, but it is not in the repository."
+            echo "::error title=Checksum not found::Tag ${TAG} expects ${SHA_FILE}, but it is not in the repository."
             missing=1
           fi
           if [ "$missing" -ne 0 ]; then
@@ -40,6 +52,7 @@ jobs:
 
           {
             echo "version=${VERSION}"
+            echo "tag=${TAG}"
             echo "apk=${APK}"
             echo "sha_file=${SHA_FILE}"
           } >> "$GITHUB_OUTPUT"
@@ -60,6 +73,7 @@ jobs:
         shell: bash
         env:
           VERSION: ${{ steps.meta.outputs.version }}
+          TAG: ${{ steps.meta.outputs.tag }}
           HASH: ${{ steps.checksum.outputs.hash }}
         run: |
           set -euo pipefail
@@ -82,7 +96,7 @@ jobs:
             echo "Cyberspace for Android, version ${VERSION}." > release-notes.md
           fi
 
-          NOTICE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${GITHUB_REF_NAME}/NOTICE.md"
+          NOTICE_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/${TAG}/NOTICE.md"
           {
             echo
             echo "SHA-256: \`${HASH}\`"
@@ -96,6 +110,8 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          target_commitish: ${{ github.sha }}
           name: Cyberspace v${{ steps.meta.outputs.version }}
           body_path: release-notes.md
           files: |

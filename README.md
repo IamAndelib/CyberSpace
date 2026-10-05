@@ -174,6 +174,8 @@ New versions are published by the [release workflow](.github/workflows/release.y
    git push origin vX.Y
    ```
 
+Alternatively, after committing, open **Actions > Release > Run workflow** and enter the version (for example `X.Y`). The workflow creates the `vX.Y` tag for you.
+
 The workflow checks that the APK and its `.sha256` file exist and match, takes the release notes from that version's CHANGELOG entry, and publishes a GitHub Release marked as latest with both files attached.
 
 > [!WARNING]
